@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RideWeather Pro | Fixed</title>
+    <title>Activity Weather</title>
     <style>
         :root { --strava: #fc4c02; --dark: #2d2d2d; --gray: #f4f4f9; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--gray); color: var(--dark); margin: 0; padding: 15px; display: flex; justify-content: center; }
@@ -184,7 +184,7 @@
             let res1, res2;
 
             if (mode === 'single') {
-                res1 = `${icon} T: ${wA.t}°C | Gevoel: ${wA.f}°C | Wind: ${wA.w}km/u ${wA.wd} | Lucht: ${wA.h}%`;
+                res1 = `${icon} Temp: ${wA.t}°C | Gevoel: ${wA.f}°C | Wind: ${wA.w}km/u ${wA.wd} | Lucht: ${wA.h}%`;
                 
                 if (vibe === 1) {
                     res2 = `📊 Weer-analyse: Temperatuur ${wA.t}°C, gevoel ${wA.f}°C. Luchtvochtigheid ${wA.h}% en windkracht ${wA.w} km/u uit ${wA.wd}.`;
