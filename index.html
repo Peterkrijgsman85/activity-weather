@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ActivityWeather Pro</title>
+    <title>ActivityWeather Pro | Fixed</title>
     <style>
         :root { --strava: #fc4c02; --dark: #2d2d2d; --gray: #f4f4f9; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--gray); color: var(--dark); margin: 0; padding: 15px; display: flex; justify-content: center; }
@@ -151,8 +151,6 @@
         return "onweer";
     }
 
-    const pick = (a) => a[Math.floor(Math.random() * a.length)];
-
     async function fetchWeather(cityInput, isStart) {
         let lat, lon;
         if (isStart && locA.dataset.lat && cityInput === locA.dataset.autoname) {
@@ -177,7 +175,7 @@
             w: Math.round(data.hourly.wind_speed_10m[hour]),
             h: data.hourly.relative_humidity_2m[hour],
             c: data.hourly.weather_code[hour],
-            wd: ['noord','noordoost','oost','zuidoost','zuid','zuidwest','west','noordwest'][Math.round(data.hourly.wind_direction_10m[hour] / 45) % 8],
+            wd: ['noorden','noordoosten','oosten','zuidoosten','zuiden','zuidwesten','westen','noordwesten'][Math.round(data.hourly.wind_direction_10m[hour] / 45) % 8],
             wdShort: ['N','NO','O','ZO','Z','ZW','W','NW'][Math.round(data.hourly.wind_direction_10m[hour] / 45) % 8]
         };
     }
@@ -195,17 +193,11 @@
             let res1, res2;
 
             if (mode === 'single') {
-                // Variant 1: Kort & Krachtig (Klimat-stijl)
                 res1 = `${icon} ${activity === 'bike' ? 'Lente-ritje' : 'Lente-loopje'} | ${wA.t}°C, ${desc}. Wind: ${wA.wdShort} ${wA.w} km/u. Luchtvochtigheid: ${wA.h}%.`;
-                
-                // Variant 2: Uitgebreider
                 res2 = `Weerupdate: Aangenaam ${wA.t < 12 ? 'fris' : 'koel'} ${actLabel} met ${wA.t}°C. ${wA.c < 3 ? 'Droog met af en toe een waterig zonnetje.' : 'Licht wisselvallig.'} 🌬️ Windkracht ${getWindBft(wA.w)} uit het ${wA.wd}.`;
             } else {
                 const wB = await fetchWeather(document.getElementById('locB').value, false);
-                const iconB = getWeatherIcon(wB.c);
-                
                 res1 = `${icon} A ➔ B ${actLabel} | ${wA.t}°C ➔ ${wB.t}°C. Wind: ${wB.wdShort} ${wB.w} km/u.`;
-                
                 res2 = `Weerupdate: Van ${wA.t}°C naar ${wB.t}°C. ${wA.c < 3 ? 'Onderweg een lekker zonnetje.' : 'Wisselende omstandigheden.'} 🌬️ Windkracht ${getWindBft(wB.w)} uit het ${wB.wd} bij aankomst.`;
             }
 
