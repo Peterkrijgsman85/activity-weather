@@ -40,7 +40,7 @@
 
 <div class="card">
     <div class="header">
-        <h1>ActivityWeather Pro 🛰️</h1>
+        <h1>ActivityWeather Pro</h1>
         <p class="description">Genereer de perfecte weerbeschrijving voor je Strava of Komoot activiteit.</p>
     </div>
 
@@ -193,7 +193,7 @@
 
             if (mode === 'single') {
                 res1 = `${icon} Weerupdate | 🌡️ ${wA.t}°C, ${desc}. 💨 Wind: ${wA.wdShort} ${wA.w} km/u. 💧 Luchtvochtigheid: ${wA.h}%.`;
-                res2 = `✨ Weerupdate: Een ${wA.t < 11 ? 'frisse' : 'lekker'} ${dayPart}sessie bij ${wA.t}°C. ${wA.c < 3 ? 'Droog met af en toe een waterig zonnetje. ☀️' : 'Wisselende omstandigheden. ☁️'} 🌬️ Windkracht ${getWindBft(wA.w)} uit het ${wA.wd}.`;
+                res2 = `✨ Weerupdate: Een ${wA.t < 11 ? 'frisse' : 'lekkere'} ${dayPart}sessie bij ${wA.t}°C. ${wA.c < 3 ? 'Droog met af en toe een waterig zonnetje. ☀️' : 'Wisselende omstandigheden. ☁️'} 🌬️ Windkracht ${getWindBft(wA.w)} uit het ${wA.wd}.`;
             } else {
                 const locBVal = document.getElementById('locB').value;
                 if(!locBVal) throw new Error("Vul een eindlocatie in voor A naar B.");
