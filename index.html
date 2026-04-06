@@ -3,108 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activiteit Weer Tool Pro</title>
+    <title>RideWeather Pro</title>
     <style>
-        body { font-family: -apple-system, system-ui, sans-serif; max-width: 500px; margin: 20px auto; padding: 20px; background: #f0f2f5; color: #333; }
-        .card { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
-        h2 { color: #fc4c02; margin-top: 0; font-size: 1.5rem; text-align: center; border-bottom: 2px solid #f0f2f5; padding-bottom: 15px; }
-        .row { display: flex; gap: 10px; margin-bottom: 15px; }
-        .input-group { flex: 1; }
-        label { display: block; font-size: 0.75rem; margin-bottom: 4px; font-weight: bold; color: #666; text-transform: uppercase; }
-        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
-        .loc-wrapper { position: relative; display: flex; gap: 5px; }
-        .btn-clear { background: #fdfdfd; border: 1px solid #ddd; padding: 0 12px; border-radius: 8px; cursor: pointer; }
-        .btn-main { background: #fc4c02; color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-top: 10px; }
-        .btn-main:hover { background: #e34402; }
-        #status { font-size: 0.8rem; color: #fc4c02; margin-top: 6px; font-style: italic; min-height: 1.2em; }
-        .variant { background: #fff; border: 2px solid #eee; padding: 15px; border-radius: 10px; margin-top: 12px; cursor: pointer; transition: all 0.2s; position: relative; }
-        .variant:hover { border-color: #fc4c02; background: #fffaf8; }
-        .variant small { color: #999; display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.7rem; }
-        .variant span { font-size: 1rem; line-height: 1.4; display: block; font-family: 'Courier New', Courier, monospace; }
-        .variant.narrative span { font-family: inherit; }
+        :root { --strava: #fc4c02; --bg: #f4f4f9; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: #222; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .card { background: white; width: 100%; max-width: 450px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h2 { color: var(--strava); text-align: center; margin-bottom: 20px; font-size: 1.4rem; }
+        
+        .mode-selector { display: flex; background: #eee; border-radius: 10px; padding: 4px; margin-bottom: 20px; }
+        .mode-btn { flex: 1; border: none; padding: 8px; border-radius: 8px; cursor: pointer; font-weight: bold; background: none; transition: 0.3s; }
+        .mode-btn.active { background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+        .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        label { font-size: 0.7rem; font-weight: bold; color: #888; text-transform: uppercase; margin-left: 5px; }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 0.9rem; margin-top: 4px; }
+        
+        .btn-main { background: var(--strava); color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-top: 15px; }
+        .btn-main:hover { opacity: 0.9; }
+
+        .result-area { margin-top: 25px; border-top: 2px solid #f0f0f0; padding-top: 20px; display: none; }
+        .variant { background: #fdfdfd; border: 1px dashed #ccc; padding: 15px; border-radius: 10px; margin-bottom: 15px; cursor: pointer; position: relative; }
+        .variant:hover { border-color: var(--strava); background: #fffaf8; }
+        .variant::after { content: '📋'; position: absolute; top: 10px; right: 10px; font-size: 0.8rem; opacity: 0.5; }
+        .variant-label { font-size: 0.7rem; color: var(--strava); font-weight: bold; margin-bottom: 5px; display: block; }
+        .copy-text { font-family: 'Courier New', Courier, monospace; font-size: 0.95rem; display: block; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>📊 Weer-Log Tool</h2>
-    
-    <div class="row">
-        <div class="input-group">
-            <label>Datum</label>
-            <input type="date" id="dateInput">
-        </div>
-        <div class="input-group">
-            <label>Tijdstip</label>
-            <input type="time" id="timeInput">
+    <h2>🚴 RideWeather Pro</h2>
+
+    <div class="mode-selector">
+        <button class="mode-btn active" onclick="setMode('single')">Rondje</button>
+        <button class="mode-btn" onclick="setMode('route')">A naar B</button>
+    </div>
+
+    <label id="locLabel">Locatie</label>
+    <input type="text" id="locA" placeholder="Startplek (of GPS...)">
+    <div class="input-row" style="margin-top:10px;">
+        <div><label>Datum</label><input type="date" id="dateA"></div>
+        <div><label>Tijd</label><input type="time" id="timeA"></div>
+    </div>
+
+    <div id="routeOnly" style="display:none; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+        <label>Aankomst Locatie</label>
+        <input type="text" id="locB" placeholder="Eindbestemming">
+        <div class="input-row" style="margin-top:10px;">
+            <div style="visibility:hidden;"><input type="date"></div> <div><label>Aankomsttijd</label><input type="time" id="timeB"></div>
         </div>
     </div>
 
-    <div class="input-group">
-        <label>Locatie</label>
-        <div class="loc-wrapper">
-            <input type="text" id="locationInput" placeholder="Stad zoeken...">
-            <button class="btn-clear" onclick="clearLocation()" title="Wis locatie">✕</button>
-        </div>
-        <div id="status">Wacht op GPS...</div>
-    </div>
+    <button class="btn-main" onclick="generateWeather()">Genereer Weerbericht</button>
 
-    <button class="btn-main" onclick="getWeather()">Genereer Beschrijvingen</button>
-
-    <div id="result" style="display:none; margin-top: 25px;">
-        <label>Klik om te kopiëren:</label>
-        
+    <div id="resultArea" class="result-area">
         <div class="variant" onclick="copy(this)">
-            <small>1. DE DATA-LOG (Technisch & Precies)</small>
-            <span id="v1"></span>
+            <span class="variant-label">DE STAT-LINE (Compact)</span>
+            <span class="copy-text" id="res1"></span>
         </div>
-
-        <div class="variant narrative" onclick="copy(this)">
-            <small>2. DE SOCIAL (Verhalend & Vlot)</small>
-            <span id="v2"></span>
-        </div>
-
         <div class="variant" onclick="copy(this)">
-            <small>3. DE EMOJI-STRIP (Visueel & Minimalistisch)</small>
-            <span id="v3"></span>
+            <span class="variant-label">DE RIT-SAMENVATTING (Verhaal)</span>
+            <span class="copy-text" id="res2" style="font-family: inherit;"></span>
         </div>
     </div>
 </div>
 
 <script>
-    const dateInput = document.getElementById('dateInput');
-    const timeInput = document.getElementById('timeInput');
-    const locInput = document.getElementById('locationInput');
-    const statusDiv = document.getElementById('status');
+    let currentMode = 'single';
+    const dateA = document.getElementById('dateA');
+    const timeA = document.getElementById('timeA');
+    const timeB = document.getElementById('timeB');
 
+    // Init
     const nu = new Date();
-    dateInput.valueAsDate = nu;
-    timeInput.value = nu.getHours().toString().padStart(2, '0') + ":00";
+    dateA.valueAsDate = nu;
+    timeA.value = nu.getHours().toString().padStart(2, '0') + ":00";
+    timeB.value = (nu.getHours() + 2).toString().padStart(2, '0') + ":00";
 
-    window.onload = () => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                const lat = pos.coords.latitude;
-                const lon = pos.coords.longitude;
-                locInput.dataset.lat = lat;
-                locInput.dataset.lon = lon;
-                try {
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-                    const data = await res.json();
-                    const place = data.address.city || data.address.town || data.address.village || "Huidige locatie";
-                    locInput.value = place;
-                    statusDiv.innerText = `📍 GPS actief: ${place}`;
-                } catch { statusDiv.innerText = "📍 GPS locatie vastgesteld"; }
-            }, () => { statusDiv.innerText = "Voer handmatig een stad in"; });
-        }
-    };
+    function setMode(mode) {
+        currentMode = mode;
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase().includes(mode === 'single' ? 'rondje' : 'naar')));
+        document.getElementById('routeOnly').style.display = mode === 'route' ? 'block' : 'none';
+        document.getElementById('locLabel').innerText = mode === 'route' ? 'Start Locatie' : 'Locatie';
+    }
 
-    function clearLocation() {
-        locInput.value = "";
-        delete locInput.dataset.lat;
-        delete locInput.dataset.lon;
-        statusDiv.innerText = "Voer een stad in.";
-        locInput.focus();
+    async function getLatLon(name) {
+        const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${name}&count=1`);
+        const data = await res.json();
+        if (!data.results) throw new Error(`Locatie "${name}" niet gevonden`);
+        return data.results[0];
     }
 
     function getWindDir(deg) {
@@ -112,63 +99,50 @@
         return dirs[Math.round(deg / 45) % 8];
     }
 
-    async function getWeather() {
-        const hour = parseInt(timeInput.value.split(':')[0]);
-        let lat = locInput.dataset.lat;
-        let lon = locInput.dataset.lon;
+    async function fetchWeatherData(lat, lon, date, hour) {
+        const isToday = new Date(date).toDateString() === new Date().toDateString();
+        const url = isToday ? "https://api.open-meteo.com/v1/forecast" : "https://archive-api.open-meteo.com/v1/archive";
+        const res = await fetch(`${url}?latitude=${lat}&longitude=${lon}&start_date=${date}&end_date=${date}&hourly=temperature_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,weather_code&timezone=auto`);
+        const data = await res.json();
+        return {
+            t: Math.round(data.hourly.temperature_2m[hour]),
+            f: Math.round(data.hourly.apparent_temperature[hour]),
+            w: Math.round(data.hourly.wind_speed_10m[hour]),
+            wd: getWindDir(data.hourly.wind_direction_10m[hour]),
+            code: data.hourly.weather_code[hour]
+        };
+    }
 
+    async function generateWeather() {
         try {
-            if (!lat || (locInput.value && !statusDiv.innerText.includes(locInput.value))) {
-                const geo = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${locInput.value}&count=1`);
-                const geoData = await geo.json();
-                if (!geoData.results) throw new Error("Locatie niet gevonden");
-                lat = geoData.results[0].latitude;
-                lon = geoData.results[0].longitude;
+            const locAVal = document.getElementById('locA').value || "Utrecht"; // Default for demo
+            const geoA = await getLatLon(locAVal);
+            const wA = await fetchWeatherData(geoA.latitude, geoA.longitude, dateA.value, parseInt(timeA.value));
+
+            let out1, out2;
+
+            if (currentMode === 'single') {
+                out1 = `🌡️ ${wA.t}°C (${wA.f}°C) | 💨 ${wA.wd} ${wA.w} km/u | ☁️ Code: ${wA.code}`;
+                out2 = `Het was ${wA.t} graden met een ${wA.w > 15 ? 'merkbare' : 'zachte'} wind uit het ${wA.wd}.`;
+            } else {
+                const locBVal = document.getElementById('locB').value || "Amsterdam";
+                const geoB = await getLatLon(locBVal);
+                const wB = await fetchWeatherData(geoB.latitude, geoB.longitude, dateA.value, parseInt(timeB.value));
+                
+                out1 = `🌡️ ${wA.t}→${wB.t}°C | 💨 ${wA.wd}${wA.w} → ${wB.wd}${wB.w} km/u`;
+                out2 = `Gestart met ${wA.t}°C en geëindigd met ${wB.t}°C. De wind draaide naar ${wB.wd} (${wB.w} km/u).`;
             }
 
-            const isToday = new Date(dateInput.value).toDateString() === new Date().toDateString();
-            const url = isToday ? "https://api.open-meteo.com/v1/forecast" : "https://archive-api.open-meteo.com/v1/archive";
-            
-            // Extra parameters: windrichting en luchtvochtigheid
-            const res = await fetch(`${url}?latitude=${lat}&longitude=${lon}&start_date=${dateInput.value}&end_date=${dateInput.value}&hourly=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,relative_humidity_2m&timezone=auto`);
-            const data = await res.json();
-
-            const t = Math.round(data.hourly.temperature_2m[hour]);
-            const f = Math.round(data.hourly.apparent_temperature[hour]);
-            const w = Math.round(data.hourly.wind_speed_10m[hour]);
-            const wd = getWindDir(data.hourly.wind_direction_10m[hour]);
-            const hum = data.hourly.relative_humidity_2m[hour];
-            const code = data.hourly.weather_code[hour];
-
-            let icon = "☀️";
-            let conditie = "Helder";
-            if (code > 0) { icon = "⛅"; conditie = "Licht bewolkt"; }
-            if (code > 40) { icon = "☁️"; conditie = "Bewolkt/Mist"; }
-            if (code > 50) { icon = "🌧️"; conditie = "Regenachtig"; }
-
-            // 1. Technisch: Focus op precisie en extra data
-            document.getElementById('v1').innerText = `[WEER-LOG] T: ${t}°C | Gevoel: ${f}°C | Wind: ${w}km/u (${wd}) | Luchtvochtigheid: ${hum}%`;
-            
-            // 2. Verhalend: Focus op leesbaarheid
-            document.getElementById('v2').innerText = `Lekker buiten! Het was ${t} graden (voelde als ${f}) met een ${w > 18 ? 'stevige' : 'rustige'} wind uit het ${wd}. Het weer was verder ${conditie.toLowerCase()}.`;
-            
-            // 3. Emoji-strip: Focus op iconen en snelheid
-            document.getElementById('v3').innerText = `${icon} ${t}°C | 💨 ${w}km/u ${wd} | 💧 ${hum}%`;
-            
-            document.getElementById('result').style.display = 'block';
+            document.getElementById('res1').innerText = out1;
+            document.getElementById('res2').innerText = out2;
+            document.getElementById('resultArea').style.display = 'block';
         } catch (e) { alert(e.message); }
     }
 
     function copy(div) {
-        const text = div.querySelector('span').innerText;
-        navigator.clipboard.writeText(text);
-        const original = div.style.borderColor;
-        div.style.borderColor = "#fc4c02";
-        div.style.background = "#fffaf8";
-        setTimeout(() => {
-            div.style.borderColor = "#eee";
-            div.style.background = "#fff";
-        }, 600);
+        navigator.clipboard.writeText(div.querySelector('.copy-text').innerText);
+        div.style.background = "#e8f5e9";
+        setTimeout(() => div.style.background = "#fdfdfd", 500);
     }
 </script>
 
