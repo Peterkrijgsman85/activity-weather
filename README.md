@@ -1,6 +1,6 @@
 # 🚴 ActivityWeather Pro
 
-**RideWeather Pro** is een superstrakke, browser-gebaseerde tool voor wielrenners en hardlopers die hun Strava- of Komoot-activiteiten willen verrijken met accurate weerdata. Geen saaie tekstjes meer, maar data met een "vibe".
+**ActivityWeather Pro** is een superstrakke, browser-gebaseerde tool voor wielrenners en hardlopers die hun Strava- of Komoot-activiteiten willen verrijken met accurate weerdata. Geen saaie tekstjes meer, maar data met een "vibe".
 
 ## 🌟 Belangrijkste Features
 
