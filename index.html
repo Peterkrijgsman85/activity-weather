@@ -3,126 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activiteit Weer-Beschrijver</title>
+    <title>Activiteit Weer Pro</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; max-width: 600px; margin: 20px auto; padding: 20px; background: #f4f7f6; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1 { color: #fc4c02; text-align: center; } /* Strava oranje */
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; }
-        input, select, button { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        button { background: #fc4c02; color: white; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        button:hover { background: #e34402; }
-        .result-box { margin-top: 20px; display: none; }
-        .variant { background: #f9f9f9; padding: 15px; border-left: 5px solid #fc4c02; margin-bottom: 10px; cursor: pointer; position: relative; }
-        .variant:hover { background: #f0f0f0; }
-        .variant small { color: #666; display: block; margin-bottom: 5px; }
-        .copy-hint { font-size: 0.8em; color: #fc4c02; float: right; }
+        body { font-family: sans-serif; max-width: 500px; margin: 20px auto; padding: 20px; background: #eef2f3; }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h2 { color: #fc4c02; margin-top: 0; }
+        .row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .input-group { flex: 1; }
+        label { display: block; font-size: 0.85em; margin-bottom: 5px; font-weight: bold; color: #444; }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        .loc-row { display: flex; gap: 5px; }
+        button { cursor: pointer; border-radius: 8px; font-weight: bold; transition: 0.2s; }
+        .btn-main { background: #fc4c02; color: white; border: none; padding: 12px; width: 100%; margin-top: 10px; }
+        .btn-clear { background: #eee; border: 1px solid #ccc; padding: 0 15px; }
+        .variant { background: #fff5f0; border: 1px solid #ffccbc; padding: 12px; border-radius: 8px; margin-top: 10px; cursor: pointer; }
+        .variant:hover { border-color: #fc4c02; }
+        small { color: #888; text-transform: uppercase; font-size: 0.7em; letter-spacing: 0.5px; }
+        #status { font-size: 0.8em; color: #666; margin-top: 5px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h1>🚴 Weer voor je Rit</h1>
+    <h2>🌦️ Activiteit Weer</h2>
     
-    <div class="form-group">
-        <label>Datum</label>
-        <input type="date" id="dateInput">
+    <div class="row">
+        <div class="input-group">
+            <label>Datum</label>
+            <input type="date" id="dateInput">
+        </div>
+        <div class="input-group">
+            <label>Tijdstip</label>
+            <input type="time" id="timeInput" value="12:00">
+        </div>
     </div>
 
-    <div class="form-group">
+    <div class="input-group" style="margin-bottom: 15px;">
         <label>Locatie</label>
-        <input type="text" id="locationInput" placeholder="Bijv: Utrecht of laat leeg voor GPS">
-        <button onclick="getWeather()">Haal weer op</button>
+        <div class="loc-row">
+            <input type="text" id="locationInput" placeholder="Zoek stad of gebruik GPS...">
+            <button class="btn-clear" onclick="clearLocation()" title="Wis locatie">✕</button>
+        </div>
+        <div id="status">📍 Detecteren van locatie...</div>
     </div>
 
-    <div id="loading" style="display:none; text-align:center;">Data ophalen...</div>
+    <button class="btn-main" onclick="getWeather()">Haal specifiek weer op</button>
 
-    <div id="result" class="result-box">
-        <h3>Kies een variant (klik om te kopiëren):</h3>
-        <div class="variant" onclick="copyText(this)">
-            <small>Feitelijk & Compact</small>
-            <span id="v1"></span>
-        </div>
-        <div class="variant" onclick="copyText(this)">
-            <small>Enthousiast & Sociaal</small>
-            <span id="v2"></span>
-        </div>
-        <div class="variant" onclick="copyText(this)">
-            <small>Kort & Krachtig</small>
-            <span id="v3"></span>
-        </div>
+    <div id="result" style="display:none; margin-top: 20px;">
+        <p style="font-size: 0.9em; font-weight: bold;">Klik om te kopiëren:</p>
+        <div class="variant" onclick="copy(this)"><small>Klassiek</small><br><span id="v1"></span></div>
+        <div class="variant" onclick="copy(this)"><small>Verhalend</small><br><span id="v2"></span></div>
+        <div class="variant" onclick="copy(this)"><small>Data-only</small><br><span id="v3"></span></div>
     </div>
 </div>
 
 <script>
-    // Zet datum standaard op vandaag
-    document.getElementById('dateInput').valueAsDate = new Date();
+    const dateInput = document.getElementById('dateInput');
+    const locInput = document.getElementById('locationInput');
+    const status = document.getElementById('status');
+
+    // 1. Automatisch datum op vandaag zetten
+    dateInput.valueAsDate = new Date();
+
+    // 2. Automatisch locatie bepalen bij opstarten
+    window.onload = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                pos => {
+                    status.innerText = "📍 GPS Locatie actief";
+                    // We slaan de coördinaten stiekem op in de dataset van de input
+                    locInput.dataset.lat = pos.coords.latitude;
+                    locInput.dataset.lon = pos.coords.longitude;
+                },
+                err => { status.innerText = "Voer handmatig een locatie in"; }
+            );
+        }
+    };
+
+    function clearLocation() {
+        locInput.value = "";
+        delete locInput.dataset.lat;
+        delete locInput.dataset.lon;
+        status.innerText = "Locatie gewist. Voer stad in.";
+        locInput.focus();
+    }
 
     async function getWeather() {
-        const date = document.getElementById('dateInput').value;
-        const locationName = document.getElementById('locationInput').value;
-        const loading = document.getElementById('loading');
-        const resultBox = document.getElementById('result');
-
-        loading.style.display = 'block';
-        resultBox.style.display = 'none';
+        const date = dateInput.value;
+        const time = document.getElementById('timeInput').value;
+        const hour = time.split(':')[0]; // Pak het uur
+        let lat = locInput.dataset.lat;
+        let lon = locInput.dataset.lon;
+        let cityName = "deze plek";
 
         try {
-            let lat, lon, city = "deze locatie";
-
-            if (locationName) {
-                // Geocoding via Open-Meteo
-                const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${locationName}&count=1&language=nl`);
-                const geoData = await geoRes.json();
-                if (!geoData.results) throw new Error("Locatie niet gevonden");
+            // Als de gebruiker zelf iets heeft getypt, negeer de GPS en zoek de stad
+            if (locInput.value.trim() !== "") {
+                const geo = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${locInput.value}&count=1`);
+                const geoData = await geo.json();
+                if (!geoData.results) throw new Error("Stad niet gevonden");
                 lat = geoData.results[0].latitude;
                 lon = geoData.results[0].longitude;
-                city = geoData.results[0].name;
-            } else {
-                // Browser Locatie
-                const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej));
-                lat = pos.coords.latitude;
-                lon = pos.coords.longitude;
+                cityName = geoData.results[0].name;
             }
 
-            // Weather Data ophalen (werkt voor vandaag én verleden)
-            const weatherRes = await fetch(`https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${date}&end_date=${date}&daily=weather_code,temperature_2m_max,wind_speed_10m_max&timezone=auto`);
-            const weatherData = await weatherRes.json();
+            if (!lat || !lon) throw new Error("Geen locatie bekend");
+
+            // Gebruik de Forecast API (voor vandaag) of Archive API (voor verleden)
+            // Om het simpel te houden pakt de Archive API data tot gisteren.
+            const isToday = new Date(date).toDateString() === new Date().toDateString();
+            const baseUrl = isToday 
+                ? `https://api.open-meteo.com/v1/forecast` 
+                : `https://archive-api.open-meteo.com/v1/archive`;
+
+            const res = await fetch(`${baseUrl}?latitude=${lat}&longitude=${lon}&start_date=${date}&end_date=${date}&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&timezone=auto`);
+            const data = await res.json();
+
+            // Pak de data van het specifieke uur
+            const temp = Math.round(data.hourly.temperature_2m[hour]);
+            const wind = Math.round(data.hourly.wind_speed_10m[hour]);
+            const feels = Math.round(data.hourly.apparent_temperature[hour]);
             
-            displayVariants(weatherData.daily, city);
-        } catch (err) {
-            alert("Oeps: " + err.message);
-        } finally {
-            loading.style.display = 'none';
+            const v1 = `⛅ Weer in ${cityName} om ${time}: ${temp}°C (voelt als ${feels}°C). Wind: ${wind} km/u.`;
+            const v2 = `Toen ik om ${time} in ${cityName} was, was het ${temp} graden. ${wind > 15 ? 'Best een fris windje!' : 'Heerlijk rustig weer.'} 🚲`;
+            const v3 = `${cityName} | ${time}u | ${temp}°C | Wind: ${wind} km/u #outdoor`;
+
+            document.getElementById('v1').innerText = v1;
+            document.getElementById('v2').innerText = v2;
+            document.getElementById('v3').innerText = v3;
+            document.getElementById('result').style.display = 'block';
+
+        } catch (e) {
+            alert(e.message);
         }
     }
 
-    function displayVariants(data, city) {
-        const temp = Math.round(data.temperature_2m_max[0]);
-        const wind = Math.round(data.wind_speed_10m_max[0]);
-        const code = data.weather_code[0];
-
-        // Simpele weervertaling
-        let desc = "Mooi weer";
-        if(code > 50) desc = "Wat regen";
-        if(code > 70) desc = "Sneeuw";
-        if(code < 3) desc = "Zonnig";
-
-        const v1 = `📍 ${city} | 🌡️ ${temp}°C | 💨 ${wind} km/u wind. ${desc} tijdens de activiteit.`;
-        const v2 = `Lekker buiten in ${city}! Het was ${temp} graden met een ${wind > 20 ? 'stevig windje' : 'rustige bries'}. ${desc}, genoten! 🌤️`;
-        const v3 = `${temp}°C, ${desc}. #buitenisbeter`;
-
-        document.getElementById('v1').innerText = v1;
-        document.getElementById('v2').innerText = v2;
-        document.getElementById('v3').innerText = v3;
-        document.getElementById('result').style.display = 'block';
-    }
-
-    function copyText(element) {
-        const text = element.querySelector('span').innerText;
-        navigator.clipboard.writeText(text);
-        alert("Gekopieerd naar klembord!");
+    function copy(div) {
+        navigator.clipboard.writeText(div.querySelector('span').innerText);
+        const originalColor = div.style.background;
+        div.style.background = "#d4edda";
+        setTimeout(() => div.style.background = originalColor, 500);
     }
 </script>
 
