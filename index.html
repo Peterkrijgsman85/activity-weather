@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activity Weather</title>
+    <title>RideWeather Pro | Final Emoji Edition</title>
     <style>
         :root { --strava: #fc4c02; --dark: #2d2d2d; --gray: #f4f4f9; }
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--gray); color: var(--dark); margin: 0; padding: 15px; display: flex; justify-content: center; }
@@ -94,25 +94,22 @@
     const genBtn = document.getElementById('genBtn');
     const loader = document.getElementById('loader');
 
-    // Init Datum/Tijd
     const nu = new Date();
     document.getElementById('dateIn').valueAsDate = nu;
     document.getElementById('timeIn').value = nu.getHours().toString().padStart(2, '0') + ":00";
 
-    // GPS Auto-detect
     window.onload = () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(async (pos) => {
                 const lat = pos.coords.latitude, lon = pos.coords.longitude;
-                locA.dataset.lat = lat; 
-                locA.dataset.lon = lon;
+                locA.dataset.lat = lat; locA.dataset.lon = lon;
                 try {
                     const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
                     const d = await r.json();
                     const name = d.address.city || d.address.town || d.address.village || "Mijn locatie";
                     locA.value = name;
                     locA.dataset.autoname = name;
-                } catch (e) { console.log("Geocoding failed"); }
+                } catch (e) {}
             });
         }
     };
@@ -143,7 +140,6 @@
 
     async function fetchWeather(cityInput, isStart) {
         let lat, lon;
-        // Gebruik GPS als de naam overeenkomt met de auto-detect
         if (isStart && locA.dataset.lat && cityInput === locA.dataset.autoname) {
             lat = locA.dataset.lat; lon = locA.dataset.lon;
         } else {
@@ -156,8 +152,6 @@
         const date = document.getElementById('dateIn').value;
         const hour = parseInt(document.getElementById('timeIn').value.split(':')[0]);
         const isToday = new Date(date).toDateString() === new Date().toDateString();
-        
-        // Selecteer juiste API (Forecast voor vandaag, Archive voor verleden)
         const baseUrl = isToday ? "https://api.open-meteo.com/v1/forecast" : "https://archive-api.open-meteo.com/v1/archive";
         const res = await fetch(`${baseUrl}?latitude=${lat}&longitude=${lon}&start_date=${date}&end_date=${date}&hourly=temperature_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,relative_humidity_2m,weather_code&timezone=auto`);
         const data = await res.json();
@@ -173,8 +167,7 @@
     }
 
     async function generate() {
-        genBtn.disabled = true;
-        loader.style.display = 'block';
+        genBtn.disabled = true; loader.style.display = 'block';
         document.getElementById('resultArea').style.display = 'none';
 
         try {
@@ -184,46 +177,33 @@
             let res1, res2;
 
             if (mode === 'single') {
-                res1 = `${icon} Temp: ${wA.t}°C | Gevoel: ${wA.f}°C | Wind: ${wA.w}km/u ${wA.wd} | Lucht: ${wA.h}%`;
+                res1 = `${icon} 🌡️ ${wA.t}°C (voelt ${wA.f}°C) | 💨 ${wA.wd} ${wA.w} km/u | 💧 ${wA.h}% vochtigheid`;
                 
-                if (vibe === 1) {
-                    res2 = `📊 Weer-analyse: Temperatuur ${wA.t}°C, gevoel ${wA.f}°C. Luchtvochtigheid ${wA.h}% en windkracht ${wA.w} km/u uit ${wA.wd}.`;
-                } else if (vibe === 2) {
-                    res2 = `${icon} Lekker buiten! Het was ${wA.t} graden met een ${wA.w > 18 ? 'stevige' : 'rustige'} wind uit het ${wA.wd}.`;
-                } else {
+                if (vibe === 1) res2 = `📊 Weer-analyse: Temperatuur ${wA.t}°C, gevoel ${wA.f}°C. Luchtvochtigheid ${wA.h}% en windkracht ${wA.w} km/u uit ${wA.wd}.`;
+                else if (vibe === 2) res2 = `${icon} Lekker buiten! Het was ${wA.t} graden met een ${wA.w > 18 ? 'stevige' : 'rustige'} wind uit het ${wA.wd}.`;
+                else {
                     const actWord = activity === 'bike' ? pick(["stoempen", "trappen", "beuken"]) : pick(["vlammen", "bikkelen", "kilometers maken"]);
                     res2 = `${icon} Wat een elementen vandaag! ${wA.t} graden en ${wA.w > 20 ? 'vechten tegen de wind' : 'genieten van de rust'}. Heerlijk om zo te ${actWord}.`;
                 }
             } else {
                 const wB = await fetchWeather(document.getElementById('locB').value, false);
-                res1 = `${icon} ${wA.t}°C → ${wB.t}°C | 💨 ${wA.wd}${wA.w} → ${wB.wd}${wB.w} km/u`;
+                res1 = `${icon} 🌡️ ${wA.t}°C ➔ ${wB.t}°C | 💨 ${wA.wd}${wA.w} ➔ ${wB.wd}${wB.w} km/u | 🌧️ Wisselend`;
                 
-                if (vibe === 1) {
-                    res2 = `Traject-log: Start ${wA.t}°C, finish ${wB.t}°C. Wind draaide naar ${wB.wd} met ${wB.w} km/u.`;
-                } else if (vibe === 2) {
-                    res2 = `Van A naar B bij ${wA.t} tot ${wB.t} graden. De wind was onderweg ${wB.w > 20 ? 'behoorlijk aanwezig' : 'vrij rustig'}.`;
-                } else {
-                    res2 = `${icon} Een reis door het weer! Begonnen met ${wA.t} graden en geëindigd met ${wB.t}. De wind uit ${wB.wd} hield het spannend. 🤘`;
-                }
+                if (vibe === 1) res2 = `Traject-log: Start ${wA.t}°C, finish ${wB.t}°C. Wind draaide naar ${wB.wd} met ${wB.w} km/u.`;
+                else if (vibe === 2) res2 = `Van A naar B bij ${wA.t} tot ${wB.t} graden. De wind was onderweg ${wB.w > 20 ? 'behoorlijk aanwezig' : 'vrij rustig'}.`;
+                else res2 = `${icon} Een reis door het weer! Begonnen met ${wA.t} graden en geëindigd met ${wB.t}. De wind uit ${wB.wd} hield het spannend. 🤘`;
             }
 
             document.getElementById('res1').innerText = res1;
             document.getElementById('res2').innerText = res2;
             document.getElementById('resultArea').style.display = 'block';
-        } catch (e) {
-            alert("Foutje: " + e.message);
-        } finally {
-            genBtn.disabled = false;
-            loader.style.display = 'none';
-        }
+        } catch (e) { alert("Fout: " + e.message); } finally { genBtn.disabled = false; loader.style.display = 'none'; }
     }
 
     function copy(div) {
-        const text = div.querySelector('.copy-text').innerText;
-        navigator.clipboard.writeText(text);
-        const originalBorder = div.style.borderColor;
+        navigator.clipboard.writeText(div.querySelector('.copy-text').innerText);
         div.style.borderColor = "#fc4c02";
-        setTimeout(() => { div.style.borderColor = originalBorder; }, 600);
+        setTimeout(() => { div.style.borderColor = "#eee"; }, 600);
     }
 </script>
 </body>
