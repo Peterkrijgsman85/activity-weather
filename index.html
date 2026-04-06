@@ -3,40 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RideWeather Pro | Vibe Edition</title>
+    <title>RideWeather Pro | Ultimate</title>
     <style>
         :root { --strava: #fc4c02; --dark: #2d2d2d; --gray: #f4f4f9; }
-        body { font-family: -apple-system, system-ui, sans-serif; background: var(--gray); color: var(--dark); margin: 0; padding: 20px; display: flex; justify-content: center; }
-        .card { background: white; width: 100%; max-width: 480px; padding: 30px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--gray); color: var(--dark); margin: 0; padding: 10px; display: flex; justify-content: center; }
+        .card { background: white; width: 100%; max-width: 500px; padding: 25px; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); box-sizing: border-box; }
         
-        h2 { color: var(--strava); text-align: center; margin-top: 0; font-size: 1.6rem; letter-spacing: -0.5px; }
+        h2 { color: var(--strava); text-align: center; margin: 0 0 20px 0; font-size: 1.6rem; }
         
-        /* Mode Switcher */
-        .mode-selector { display: flex; background: #eee; border-radius: 12px; padding: 5px; margin-bottom: 20px; }
-        .mode-btn { flex: 1; border: none; padding: 10px; border-radius: 9px; cursor: pointer; font-weight: bold; background: none; transition: 0.2s; }
-        .mode-btn.active { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); color: var(--strava); }
+        /* Activity Selector */
+        .activity-selector { display: flex; gap: 10px; margin-bottom: 20px; }
+        .act-btn { flex: 1; background: #eee; border: none; padding: 12px; border-radius: 12px; cursor: pointer; font-size: 1.2rem; transition: 0.2s; border: 2px solid transparent; }
+        .act-btn.active { background: #fffaf8; border-color: var(--strava); filter: grayscale(0); }
+        .act-btn:not(.active) { filter: grayscale(1); opacity: 0.6; }
 
-        /* Vibe Slider */
-        .vibe-container { margin: 25px 0; text-align: center; }
-        .vibe-labels { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: bold; margin-bottom: 8px; color: #666; }
-        .slider { -webkit-appearance: none; width: 100%; height: 8px; border-radius: 5px; background: #ddd; outline: none; }
-        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--strava); cursor: pointer; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .mode-selector { display: flex; background: #eee; border-radius: 12px; padding: 4px; margin-bottom: 20px; }
+        .mode-btn { flex: 1; border: none; padding: 8px; border-radius: 9px; cursor: pointer; font-weight: bold; background: none; }
+        .mode-btn.active { background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); color: var(--strava); }
 
-        .input-group { margin-bottom: 15px; }
-        label { font-size: 0.75rem; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 5px; display: block; }
-        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box; font-size: 1rem; }
-        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        
-        .status-msg { font-size: 0.8rem; color: var(--strava); margin-top: 5px; font-style: italic; min-height: 1.2em; }
-        
-        .btn-generate { background: var(--strava); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 12px rgba(252, 76, 2, 0.3); }
-        .btn-generate:active { transform: scale(0.98); }
+        .vibe-container { margin: 20px 0; }
+        .vibe-labels { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: bold; color: #666; margin-bottom: 5px; }
+        .slider { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 5px; background: #ddd; outline: none; }
+        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--strava); cursor: pointer; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
-        .result-box { margin-top: 30px; display: none; border-top: 2px solid #f0f0f0; padding-top: 20px; }
-        .variant { background: #fff; border: 2px solid #eee; padding: 18px; border-radius: 15px; margin-bottom: 15px; cursor: pointer; transition: 0.3s; position: relative; }
-        .variant:hover { border-color: var(--strava); transform: translateY(-2px); }
-        .variant-tag { position: absolute; top: -10px; left: 15px; background: var(--strava); color: white; font-size: 0.6rem; padding: 2px 8px; border-radius: 10px; font-weight: bold; }
-        .copy-text { font-size: 1rem; line-height: 1.5; color: #333; }
+        .input-group { margin-bottom: 12px; }
+        label { font-size: 0.7rem; font-weight: 700; color: #999; text-transform: uppercase; display: block; margin-bottom: 4px; }
+        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 0.95rem; }
+        
+        .btn-generate { background: var(--strava); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
+        
+        .result-box { margin-top: 25px; border-top: 2px solid #f0f0f0; padding-top: 20px; display: none; }
+        .variant { background: #fff; border: 2px solid #eee; padding: 15px; border-radius: 15px; margin-bottom: 12px; cursor: pointer; position: relative; }
+        .variant:hover { border-color: var(--strava); }
+        .variant-tag { position: absolute; top: -10px; left: 12px; background: var(--strava); color: white; font-size: 0.6rem; padding: 2px 8px; border-radius: 8px; font-weight: bold; }
+        .copy-text { font-size: 0.95rem; line-height: 1.4; color: #333; display: block; }
     </style>
 </head>
 <body>
@@ -44,184 +44,143 @@
 <div class="card">
     <h2>🚴 RideWeather Pro</h2>
 
+    <label>Activiteit</label>
+    <div class="activity-selector">
+        <button class="act-btn active" onclick="setActivity('bike', this)">🚲 Fietsen</button>
+        <button class="act-btn" onclick="setActivity('run', this)">🏃 Hardlopen</button>
+    </div>
+
     <div class="mode-selector">
-        <button class="mode-btn active" id="btnSingle" onclick="setMode('single')">Lokaal Rondje</button>
-        <button class="mode-btn" id="btnRoute" onclick="setMode('route')">A naar B Route</button>
+        <button class="mode-btn active" id="btnSingle" onclick="setMode('single')">Rondje</button>
+        <button class="mode-btn" id="btnRoute" onclick="setMode('route')">A naar B</button>
     </div>
 
     <div class="vibe-container">
-        <div class="vibe-labels">
-            <span>🤓 DE NERD</span>
-            <span>AVONTURIER 🏔️</span>
-        </div>
+        <div class="vibe-labels"><span>🤓 NERD</span><span>AVONTURIER 🌪️</span></div>
         <input type="range" min="0" max="100" value="50" class="slider" id="vibeSlider">
     </div>
 
     <div class="input-group">
-        <label id="labelA">Startlocatie</label>
-        <input type="text" id="locA" placeholder="Bezig met zoeken via GPS...">
-        <div id="statusA" class="status-msg"></div>
+        <label id="labelA">Locatie / Start</label>
+        <input type="text" id="locA" placeholder="GPS Zoeken...">
     </div>
 
-    <div id="routeFields" style="display:none;">
-        <div class="input-group">
-            <label>Eindlocatie</label>
-            <input type="text" id="locB" placeholder="Waar eindigde de rit?">
-        </div>
+    <div id="routeFields" style="display:none;" class="input-group">
+        <label>Eindlocatie</label>
+        <input type="text" id="locB" placeholder="Waar kom je aan?">
     </div>
 
-    <div class="row">
-        <div class="input-group">
-            <label>Datum</label>
-            <input type="date" id="dateInput">
-        </div>
-        <div class="input-group">
-            <label>Tijdstip</label>
-            <input type="time" id="timeInput">
-        </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="input-group"><label>Datum</label><input type="date" id="dateInput"></div>
+        <div class="input-group"><label>Tijd</label><input type="time" id="timeInput"></div>
     </div>
 
-    <button class="btn-generate" onclick="generate()">Genereer Weerbericht</button>
+    <button class="btn-generate" onclick="generate()">Genereer Beschrijving</button>
 
     <div id="resultArea" class="result-box">
-        <div class="variant" onclick="copy(this)">
-            <div class="variant-tag">COMPACT</div>
-            <span class="copy-text" id="res1"></span>
-        </div>
-        <div class="variant" onclick="copy(this)">
-            <div class="variant-tag">BESCHRIJVEND</div>
-            <span class="copy-text" id="res2"></span>
-        </div>
+        <div class="variant" onclick="copy(this)"><div class="variant-tag">DATA</div><span class="copy-text" id="res1"></span></div>
+        <div class="variant" onclick="copy(this)"><div class="variant-tag">STORY</div><span class="copy-text" id="res2"></span></div>
     </div>
 </div>
 
 <script>
-    let mode = 'single';
-    const vibeSlider = document.getElementById('vibeSlider');
+    let currentMode = 'single';
+    let currentActivity = 'bike';
 
-    // Init: Tijd en Datum
+    // Init
     const nu = new Date();
     document.getElementById('dateInput').valueAsDate = nu;
     document.getElementById('timeInput').value = nu.getHours().toString().padStart(2, '0') + ":00";
 
-    // GPS Auto-detect
-    window.onload = () => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                const lat = pos.coords.latitude;
-                const lon = pos.coords.longitude;
-                document.getElementById('locA').dataset.lat = lat;
-                document.getElementById('locA').dataset.lon = lon;
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-                const data = await res.json();
-                const place = data.address.city || data.address.town || "Huidige locatie";
-                document.getElementById('locA').value = place;
-                document.getElementById('statusA').innerText = `📍 Locatie herkend als ${place}`;
-            });
-        }
-    };
+    function setActivity(a, btn) {
+        currentActivity = a;
+        document.querySelectorAll('.act-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
 
     function setMode(m) {
-        mode = m;
+        currentMode = m;
         document.getElementById('btnSingle').classList.toggle('active', m === 'single');
         document.getElementById('btnRoute').classList.toggle('active', m === 'route');
         document.getElementById('routeFields').style.display = m === 'route' ? 'block' : 'none';
-        document.getElementById('labelA').innerText = m === 'route' ? 'Startlocatie' : 'Locatie';
     }
 
-    async function getCoords(name) {
-        const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${name}&count=1`);
-        const data = await res.json();
-        if (!data.results) throw new Error(`Stad "${name}" niet gevonden`);
-        return data.results[0];
-    }
+    // Help-functies voor variatie
+    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-    function getWindDesc(speed, vibe) {
-        if (vibe < 30) return `${speed} km/u`;
-        if (speed < 10) return "een flauw briesje";
-        if (speed < 20) return "een matige wind";
-        if (speed < 30) return "een stevige wind";
-        return "een brute bak wind";
-    }
+    function getNarrative(w, vibe, act, isRoute) {
+        const isBike = act === 'bike';
+        const windLevel = w.w > 20 ? 'hard' : (w.w > 10 ? 'medium' : 'low');
+        const tempLevel = w.t > 20 ? 'hot' : (w.t < 10 ? 'cold' : 'perfect');
 
-    function getTempDesc(t, vibe) {
-        if (vibe < 30) return `${t}°C`;
-        if (t < 5) return "ijskoud";
-        if (t < 12) return "frisjes";
-        if (t < 20) return "aangenaam";
-        if (t < 28) return "lekker warm";
-        return "verzengend heet";
+        if (vibe < 40) { // Nerd
+            return `Analyse: ${w.t}°C actueel, voelt als ${w.f}°C. Luchtvochtigheid ${w.h}%. Wind ${w.w}km/u uit ${w.wd}.`;
+        }
+
+        const intro = isBike 
+            ? pick(["Lekker op de pedalen!", "Mooi ritje hoor.", "De benen voelden goed.", "Heerlijk buiten gespeeld."])
+            : pick(["Lekker loopje!", "De schoenen mochten weer naar buiten.", "Kilometers vreten.", "Frisse neus gehaald."]);
+
+        const windZin = {
+            low: isBike ? "nagenoeg windstil, heerlijk cruisen." : "geen zuchtje wind, ideaal voor de hartslag.",
+            medium: isBike ? `een prima windje uit ${w.wd}.` : `lekker briesje uit ${w.wd}.`,
+            hard: isBike ? `stevig stoempen tegen de ${w.wd} wind.` : `vechten tegen de elementen uit ${w.wd}.`
+        };
+
+        const tempZin = {
+            hot: "Het was zweten geblazen vandaag! 🔥",
+            cold: "Brrr, wel even de handschoentjes nodig. ❄️",
+            perfect: "Het temperatuurtje was precies goed."
+        };
+
+        if (vibe > 75) { // Avonturier
+            const hero = isBike
+                ? pick(["Mijn cadans bleef strak ondanks de wind.", "De klimmetjes voelden zwaarder door de hitte.", "Echte heroïek in dit weer."])
+                : pick(["Het asfalt was van mij vandaag.", "Elke stap was raak in deze kou.", "Mijn longen genoten van de frisse lucht."]);
+            return `${intro} ${tempZin[tempLevel]} ${windZin[windLevel]} ${hero}`;
+        }
+
+        return `${intro} Het was ${w.t} graden met ${windZin[windLevel]}`;
     }
 
     async function generate() {
+        const vibe = document.getElementById('vibeSlider').value;
+        const locA = document.getElementById('locA').value || "Utrecht";
+        const date = document.getElementById('dateInput').value;
+        const hour = parseInt(document.getElementById('timeInput').value.split(':')[0]);
+
         try {
-            const vibe = parseInt(vibeSlider.value);
-            const locA = document.getElementById('locA');
-            let latA = locA.dataset.lat, lonA = locA.dataset.lon;
+            const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${locA}&count=1`);
+            const geoData = await geoRes.json();
+            const lat = geoData.results[0].latitude;
+            const lon = geoData.results[0].longitude;
 
-            if (!latA || (locA.value && !document.getElementById('statusA').innerText.includes(locA.value))) {
-                const geo = await getCoords(locA.value);
-                latA = geo.latitude; lonA = geo.longitude;
-            }
-
-            const date = document.getElementById('dateInput').value;
-            const hour = parseInt(document.getElementById('timeInput').value.split(':')[0]);
-            
             const isToday = new Date(date).toDateString() === new Date().toDateString();
-            const url = isToday ? "https://api.open-meteo.com/v1/forecast" : "https://archive-api.open-meteo.com/v1/archive";
+            const weatherUrl = isToday ? "https://api.open-meteo.com/v1/forecast" : "https://archive-api.open-meteo.com/v1/archive";
             
-            const fetchWeather = async (la, lo) => {
-                const r = await fetch(`${url}?latitude=${la}&longitude=${lo}&start_date=${date}&end_date=${date}&hourly=temperature_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,relative_humidity_2m&timezone=auto`);
-                const d = await r.json();
-                return {
-                    t: Math.round(d.hourly.temperature_2m[hour]),
-                    f: Math.round(d.hourly.apparent_temperature[hour]),
-                    w: Math.round(d.hourly.wind_speed_10m[hour]),
-                    h: d.hourly.relative_humidity_2m[hour]
-                };
+            const res = await fetch(`${weatherUrl}?latitude=${lat}&longitude=${lon}&start_date=${date}&end_date=${date}&hourly=temperature_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,relative_humidity_2m&timezone=auto`);
+            const d = await res.json();
+            
+            const w = {
+                t: Math.round(d.hourly.temperature_2m[hour]),
+                f: Math.round(d.hourly.apparent_temperature[hour]),
+                w: Math.round(d.hourly.wind_speed_10m[hour]),
+                h: d.hourly.relative_humidity_2m[hour],
+                wd: ['N','NO','O','ZO','Z','ZW','W','NW'][Math.round(d.hourly.wind_direction_10m[hour] / 45) % 8]
             };
 
-            const wA = await fetchWeather(latA, lonA);
-            let res1, res2;
-
-            if (mode === 'single') {
-                if (vibe < 30) {
-                    res1 = `📊 Temp: ${wA.t}°C | Gevoel: ${wA.f}°C | Wind: ${wA.w}km/u | Vocht: ${wA.h}%`;
-                    res2 = `Technische condities: De werkelijke temperatuur was ${wA.t} graden bij een luchtvochtigheid van ${wA.h}%.`;
-                } else if (vibe < 70) {
-                    res1 = `🌡️ ${wA.t}°C | 💨 ${wA.w} km/u | Matig weer`;
-                    res2 = `Prima ritje bij ${wA.t} graden. Er stond ${getWindDesc(wA.w, 50)}.`;
-                } else {
-                    res1 = `🔥 ${getTempDesc(wA.t, 100)} | 🌬️ ${getWindDesc(wA.w, 100)}`;
-                    res2 = `Wat een avontuur! Het was ${getTempDesc(wA.t, 100)} en we moesten vechten tegen ${getWindDesc(wA.w, 100)}. Heerlijk om buiten te zijn! 🏔️`;
-                }
-            } else {
-                const geoB = await getCoords(document.getElementById('locB').value);
-                const wB = await fetchWeather(geoB.latitude, geoB.longitude);
-                
-                if (vibe < 50) {
-                    res1 = `📈 ${wA.t}°C → ${wB.t}°C | 💨 ${wA.w} → ${wB.w} km/u`;
-                    res2 = `Route-analyse: Gestart bij ${wA.t}°C, geëindigd bij ${wB.t}°C. Wind varieerde tussen de ${wA.w} en ${wB.w} km/u.`;
-                } else {
-                    res1 = `🚀 Van ${getTempDesc(wA.t, 100)} naar ${getTempDesc(wB.t, 100)}`;
-                    res2 = `Een epische reis! We vertrokken in de ${getTempDesc(wA.t, 100)} en kwamen aan toen het ${getTempDesc(wB.t, 100)} was. De wind hield ons scherp. 🤘`;
-                }
-            }
-
-            document.getElementById('res1').innerText = res1;
-            document.getElementById('res2').innerText = res2;
+            // Resultaten vullen
+            document.getElementById('res1').innerText = `🌡️ ${w.t}°C | 💨 ${w.w}km/u ${w.wd} | 💧 ${w.h}% | #weather`;
+            document.getElementById('res2').innerText = getNarrative(w, vibe, currentActivity, currentMode === 'route');
             document.getElementById('resultArea').style.display = 'block';
-
-        } catch (e) { alert(e.message); }
+        } catch (e) { alert("Locatie niet gevonden!"); }
     }
 
     function copy(div) {
         navigator.clipboard.writeText(div.querySelector('.copy-text').innerText);
         div.style.background = "#fffaf8";
-        div.style.borderColor = "#fc4c02";
-        setTimeout(() => { div.style.background = "#fff"; div.style.borderColor = "#eee"; }, 600);
+        setTimeout(() => div.style.background = "#fff", 500);
     }
 </script>
-
 </body>
 </html>
