@@ -1,46 +1,38 @@
-🚴 ActivityWeather Pro
-RideWeather Pro is een lichtgewicht, browser-gebaseerde tool voor wielrenners en hardlopers die hun Strava- of Komoot-activiteiten willen verrijken met accurate weerdata. Geen saaie tekstjes meer, maar data met een "vibe".
+# 🚴 ActivityWeather Pro
 
-🌟 Features
-Locatie Intelligentie: Automatische herkenning van je startlocatie via GPS.
+**RideWeather Pro** is een superstrakke, browser-gebaseerde tool voor wielrenners en hardlopers die hun Strava- of Komoot-activiteiten willen verrijken met accurate weerdata. Geen saaie tekstjes meer, maar data met een "vibe".
 
-A-naar-B Modus: Speciaal voor lange ritten of runs; bereken het weerverloop van start tot finish.
+## 🌟 Belangrijkste Features
 
-De Vibe-Slider: Kies hoe je de data presenteert:
+- **📍 Locatie Intelligentie:** Automatische herkenning van je startlocatie via GPS (Reverse Geocoding).
+- **🛤️ A-naar-B Modus:** Speciaal voor lange ritten of runs; bereken het weerverloop van je startpunt tot je finishlocatie.
+- **🌡️ Dynamische Icoontjes:** Automatische weergave van het weerbeeld (zon, regen, wolken) op basis van officiële WMO-codes.
+- **🎭 De Vibe-Slider:** Kies hoe je de data presenteert met een stapsgewijze selector:
+    - **Nerd 🤓:** Voor de data-analisten (luchtvochtigheid, exacte gevoelstemperatuur, windrichting).
+    - **Gewoon 🌤️:** Een gebalanceerde, menselijke samenvatting voor je volgers.
+    - **Avonturier 🌋:** Heroïsche, willekeurig gegenereerde teksten die passen bij jouw strijd tegen de elementen.
+- **🏃 Activiteit-Specifiek:** De tekstgeneratie past zich aan; een fietser gaat "beuken tegen de wind" terwijl een loper "kilometers vreet".
 
-Nerd 🤓: Voor de data-analisten (luchtvochtigheid, exacte gevoelstemperatuur, windrichting).
+## 🚀 Hoe te gebruiken?
 
-Gewoon 🌤️: Een gebalanceerde, menselijke samenvatting.
+1.  Open https://peterkrijgsman85.github.io/activity-weather/ simpelweg in je favoriete browser (geen server nodig).
+2.  Geef toestemming voor je locatie of typ handmatig een stad in.
+3.  Kies je activiteit, de datum/tijd en je gewenste **vibe**.
+4.  Klik op **Genereer Bericht**.
+5.  Klik op een van de resultaten om de tekst direct naar je klembord te kopiëren.
+6.  Plak het in je Strava/komoot-beschrijving en zie die kudo's binnenstromen! 👍
 
-Avonturier 🌋: Heroïsche teksten die passen bij jouw strijd tegen de elementen.
+## 🛠️ Techniek
 
-Activiteit-Specifiek: Dynamische tekstgeneratie die rekening houdt met of je op de fiets zat of je hardloopschoenen aan had.
+Dit project is "zero-dependency" en extreem snel:
+- **HTML5 & Modern CSS:** Responsief kaart-ontwerp met Strava-accenten.
+- **Vanilla JavaScript:** Volledige logica zonder zware frameworks.
+- **Open-Meteo API:** Voor hoogwaardige actuele én historische weerdata (geen API-key nodig).
+- **Nominatim (OpenStreetMap):** Voor het vertalen van GPS-coördinaten naar plaatsnamen.
 
-Privacy First: Werkt volledig in de browser. Geen accounts, geen tracking.
+## 📄 Licentie
 
-🚀 Hoe te gebruiken?
-Open https://pekri.nl/activity-weather/ in je favoriete browser.
+Dit project is open-source. Voel je vrij om het te forken, aan te passen voor je eigen fietsclub, of te delen met je sportvrienden.
 
-Geef toestemming voor je locatie (of typ handmatig een stad in).
-
-Kies je activiteit, de datum/tijd en je gewenste "vibe".
-
-Klik op Genereer en klik op de tekst om deze direct naar je klembord te kopiëren.
-
-Plak het in je Strava-beschrijving en klaar!
-
-🛠️ Techniek
-Dit project is gebouwd met:
-
-HTML5/CSS3 (Modern Card Design & Responsive UI)
-
-Vanilla JavaScript (Geen zware libraries nodig)
-
-Open-Meteo API: Voor nauwkeurige actuele en historische weerdata.
-
-Nominatim (OpenStreetMap): Voor reverse geocoding van je GPS-coördinaten.
-
-📄 Licentie
-Dit project is open-source. Voel je vrij om het aan te passen, te verbeteren of te delen met je fietsmaten.
-
-Gemaakt voor atleten die net zoveel van data houden als van de buitenlucht. 🤘
+---
+*Gemaakt voor atleten die net zoveel van data houden als van de buitenlucht.* 🤘
