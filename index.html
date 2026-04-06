@@ -82,8 +82,8 @@
     <div id="loader">Data ophalen...</div>
 
     <div id="resultArea" class="result-box">
-        <div class="variant" onclick="copy(this)"><div class="variant-tag">DATA</div><span class="copy-text" id="res1"></span></div>
-        <div class="variant" onclick="copy(this)"><div class="variant-tag">VERHAAL</div><span class="copy-text" id="res2"></span></div>
+        <div class="variant" onclick="copy(this)"><div class="variant-tag">KORT & KRACHTIG</div><span class="copy-text" id="res1"></span></div>
+        <div class="variant" onclick="copy(this)"><div class="variant-tag">UITGEBREIDER</div><span class="copy-text" id="res2"></span></div>
     </div>
 </div>
 
@@ -136,6 +136,21 @@
         return "⛈️";
     }
 
+    function getWindBft(kmh) {
+        if (kmh < 1) return 0; if (kmh < 6) return 1; if (kmh < 12) return 2;
+        if (kmh < 20) return 3; if (kmh < 29) return 4; if (kmh < 39) return 5;
+        if (kmh < 50) return 6; if (kmh < 62) return 7; return 8;
+    }
+
+    function getWeatherDesc(code) {
+        if (code === 0) return "onbewolkt";
+        if (code <= 3) return "half bewolkt";
+        if (code <= 48) return "mistig";
+        if (code <= 67) return "regenachtig";
+        if (code <= 82) return "buien";
+        return "onweer";
+    }
+
     const pick = (a) => a[Math.floor(Math.random() * a.length)];
 
     async function fetchWeather(cityInput, isStart) {
@@ -162,7 +177,8 @@
             w: Math.round(data.hourly.wind_speed_10m[hour]),
             h: data.hourly.relative_humidity_2m[hour],
             c: data.hourly.weather_code[hour],
-            wd: ['N','NO','O','ZO','Z','ZW','W','NW'][Math.round(data.hourly.wind_direction_10m[hour] / 45) % 8]
+            wd: ['noord','noordoost','oost','zuidoost','zuid','zuidwest','west','noordwest'][Math.round(data.hourly.wind_direction_10m[hour] / 45) % 8],
+            wdShort: ['N','NO','O','ZO','Z','ZW','W','NW'][Math.round(data.hourly.wind_direction_10m[hour] / 45) % 8]
         };
     }
 
@@ -173,25 +189,24 @@
         try {
             const wA = await fetchWeather(locA.value, true);
             const icon = getWeatherIcon(wA.c);
-            const vibe = parseInt(vibeSlider.value);
+            const desc = getWeatherDesc(wA.c);
+            const actLabel = activity === 'bike' ? 'ritje' : 'loopje';
+            
             let res1, res2;
 
             if (mode === 'single') {
-                res1 = `${icon} 🌡️ ${wA.t}°C (voelt ${wA.f}°C) | 💨 ${wA.wd} ${wA.w} km/u | 💧 ${wA.h}% vochtigheid`;
+                // Variant 1: Kort & Krachtig (Klimat-stijl)
+                res1 = `${icon} ${activity === 'bike' ? 'Lente-ritje' : 'Lente-loopje'} | ${wA.t}°C, ${desc}. Wind: ${wA.wdShort} ${wA.w} km/u. Luchtvochtigheid: ${wA.h}%.`;
                 
-                if (vibe === 1) res2 = `📊 Weer-analyse: Temperatuur ${wA.t}°C, gevoel ${wA.f}°C. Luchtvochtigheid ${wA.h}% en windkracht ${wA.w} km/u uit ${wA.wd}.`;
-                else if (vibe === 2) res2 = `${icon} Lekker buiten! Het was ${wA.t} graden met een ${wA.w > 18 ? 'stevige' : 'rustige'} wind uit het ${wA.wd}.`;
-                else {
-                    const actWord = activity === 'bike' ? pick(["stoempen", "trappen", "beuken"]) : pick(["vlammen", "bikkelen", "kilometers maken"]);
-                    res2 = `${icon} Wat een elementen vandaag! ${wA.t} graden en ${wA.w > 20 ? 'vechten tegen de wind' : 'genieten van de rust'}. Heerlijk om zo te ${actWord}.`;
-                }
+                // Variant 2: Uitgebreider
+                res2 = `Weerupdate: Aangenaam ${wA.t < 12 ? 'fris' : 'koel'} ${actLabel} met ${wA.t}°C. ${wA.c < 3 ? 'Droog met af en toe een waterig zonnetje.' : 'Licht wisselvallig.'} 🌬️ Windkracht ${getWindBft(wA.w)} uit het ${wA.wd}.`;
             } else {
                 const wB = await fetchWeather(document.getElementById('locB').value, false);
-                res1 = `${icon} 🌡️ ${wA.t}°C ➔ ${wB.t}°C | 💨 ${wA.wd}${wA.w} ➔ ${wB.wd}${wB.w} km/u | 🌧️ Wisselend`;
+                const iconB = getWeatherIcon(wB.c);
                 
-                if (vibe === 1) res2 = `Traject-log: Start ${wA.t}°C, finish ${wB.t}°C. Wind draaide naar ${wB.wd} met ${wB.w} km/u.`;
-                else if (vibe === 2) res2 = `Van A naar B bij ${wA.t} tot ${wB.t} graden. De wind was onderweg ${wB.w > 20 ? 'behoorlijk aanwezig' : 'vrij rustig'}.`;
-                else res2 = `${icon} Een reis door het weer! Begonnen met ${wA.t} graden en geëindigd met ${wB.t}. De wind uit ${wB.wd} hield het spannend. 🤘`;
+                res1 = `${icon} A ➔ B ${actLabel} | ${wA.t}°C ➔ ${wB.t}°C. Wind: ${wB.wdShort} ${wB.w} km/u.`;
+                
+                res2 = `Weerupdate: Van ${wA.t}°C naar ${wB.t}°C. ${wA.c < 3 ? 'Onderweg een lekker zonnetje.' : 'Wisselende omstandigheden.'} 🌬️ Windkracht ${getWindBft(wB.w)} uit het ${wB.wd} bij aankomst.`;
             }
 
             document.getElementById('res1').innerText = res1;
